@@ -1,1 +1,1 @@
-O arquivo extensão ".pde" pode ser manipulado pela IDE Arduino disponível em http://www.arduino.cc/en/Main/software
+O arquivo extensão ".ino" pode ser manipulado pela IDE Arduino disponível em http://www.arduino.cc/en/Main/software
