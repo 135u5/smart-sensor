@@ -9,15 +9,13 @@ package web.service;
  * @author  José Renato da Silva Júnior
 **/
 
-import java.sql.Connection;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import db.DataDB;
+import communication.Manager;
 
 // Caminho da URL a ser respondido
 @Path("/getdata/{sensorType}") 
@@ -27,14 +25,13 @@ public class Data {
 	 * */
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)	
-	public String response(@PathParam("sensorType") String sensortype){
-		/** Cria uma conexao com o banco
+	public String response(@PathParam("sensorType") String sensorType){
+		/** Cria uma comunicacao com o gerente
 		 * */
-		Connection conn = DataDB.getConnInstance();		
-		/** SQL que sera executado no banco de dados
-		 * */
-		String sql = "select * from DATA_READ where sensor_type = "+"'"+sensortype+"'";		
-		return DataDB.runQuery(conn, sql);
+		Manager manager = new Manager();		
+		/** Retorna a resposta do banco para o usuario
+		 * */				
+		return manager.NewQuery(sensorType);
 		
 	}
 }
