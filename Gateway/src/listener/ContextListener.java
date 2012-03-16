@@ -11,6 +11,8 @@ package listener;
 
 import javax.servlet.*;
 
+import communication.Manager;
+
 import net.tinyos.message.MoteIF;
 import net.tinyos.packet.BuildSource;
 import net.tinyos.packet.PhoenixSource;
@@ -26,7 +28,7 @@ public  class ContextListener implements ServletContextListener {
   static MoteIF mif = createMif();
 	
   public static TinyOS listener = new TinyOS(mif);
-  public static Arduino listenerArduino = new Arduino("COM7", 9600);
+  public static Arduino listenerArduino = new Arduino("/dev/ttyACM0", 19200);
   
 
   
