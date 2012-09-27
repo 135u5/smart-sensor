@@ -1,0 +1,234 @@
+<!-- 
+ Projeto - CIA2 - Meta WoT - Infraestrutura SmartSensor
+ Site do projeto: http://labnet.nce.ufrj.br/cia2/
+ 
+ *** rssf.emml-macros ****
+ Biblioteca global EMML com Macros especificas para o dominio
+ das Redes de Sensores sem Fio
+ 
+ @version 1.0 01 Set 2012
+ @author  Jesus Martin Talavera Portocarrero
+ @author  Jose Renato da Silva Junior
+-->
+
+<macros xmlns="http://www.openemml.org/2009-04-15/EMMLSchema"
+        xmlns:myfunc="java:org.jackbe.emml.utils.EMMLFunctions">
+
+	<!-- 
+	@Macro SortbyDataAsc:
+	Macro responsavel por ordenar os dados provenientes de uma RSSF
+		em forma ascendente por dado
+	@Serviço REST utilizado: /REST/getdata/[tipoSensor]/
+	-->		
+   	<macro name="SortbyDataAsc">
+        <input name="mydoc" type="document" />
+        <output name="result" type="document" />
+		<sort inputvariable="mydoc" sortexpr="/Results/Row"
+			sortkeys="xs:decimal(DATA/string())" sortdir="ascending"
+			outputvariable="result" />
+    </macro>
+	
+	<!-- 
+	@Macro SortbyDataDesc:
+	Macro responsavel por ordenar os dados provenientes de uma RSSF
+		em forma descendente por dado
+	@Serviço REST utilizado: /REST/getdata/[tipoSensor]/
+	-->		
+	<macro name="SortbyDataDesc">
+        <input name="mydoc" type="document" />
+        <output name="result" type="document" />
+		<sort inputvariable="mydoc" sortexpr="/Results/Row"
+			sortkeys="xs:decimal(DATA/string())" sortdir="descending"
+			outputvariable="result" />
+    </macro>
+
+	<!-- 
+	@Macro SortbyDateAsc:
+	Macro responsavel por ordenar os dados provenientes de uma RSSF
+		em forma ascendente por data
+	@Serviço REST utilizado: /REST/getdata/[tipoSensor]/
+	-->		
+	<macro name="SortbyDateAsc">
+        <input name="mydoc" type="document" />
+        <output name="result" type="document" />
+		<sort inputvariable="mydoc" sortexpr="/Results/Row"
+			sortkeys="xs:date(DATE)"
+			outputvariable="result" />
+    </macro>
+	
+	<!-- 
+	@Macro SortbyDateDesc:
+	Macro responsavel por ordenar os dados provenientes de uma RSSF
+		em forma descendente por data
+	@Serviço REST utilizado: /REST/getdata/[tipoSensor]/
+	-->		
+	<macro name="SortbyDateDesc">
+        <input name="mydoc" type="document" />
+        <output name="result" type="document" />
+		<sort inputvariable="mydoc" sortexpr="/Results/Row"
+			sortkeys="xs:date(DATE)" sortdir="descending"
+			outputvariable="result" />
+    </macro>
+	
+	<!-- 
+	@Macro FilterSensor:
+	Macro responsavel por filtrar os dados provenientes de uma RSSF
+		de acordo à identificação do nó (SENSOR_ID) enviada como parâmetro
+	@Serviço REST utilizado: /REST/getdata/[tipoSensor]/
+	-->	
+	<macro name="FilterSensor">
+        <input name="mydoc" type="document" />
+		<input name="var" type="string"/>
+		<output name="result" type="document" />
+		<filter inputvariable="mydoc"
+            filterexpr="/Results/Row[SENSOR_ID = $var]"
+            outputvariable="result" />
+    </macro>
+	
+	<!-- 
+	@Macro FilterPlatform:
+	Macro responsavel por filtrar os dados provenientes de uma RSSF
+		de acordo ao tipo de plataforma (PLATAFORM) enviada como parâmetro
+		Ex: TinyOS, Arduino
+	@Serviço REST utilizado: /REST/getservices/
+	-->	
+	<macro name="FilterPlatform">
+        <input name="mydoc" type="document" />
+		<input name="var" type="string"/>
+		<output name="result" type="document" />
+		<filter inputvariable="mydoc"
+            filterexpr="/Results/Row[PLATAFORM = $var]"
+            outputvariable="result" />
+    </macro>
+	
+	<!-- 
+	@Macro CountMacro:
+	Macro responsavel por agrupar os serviços de uma RSSF e 
+		indica a quantidade de dados coletados por cada serviço
+	@Serviço REST utilizado: /REST/getdata/[tipoSensor]/
+	-->	
+	<macro name="CountMacro">
+        <input name="mydoc" type="document" />
+		<output name="result" type="document" />
+		<group outputvariable="result"  
+			by="$mydoc/Results/Row/SENSOR_TYPE">
+			<DATA count="{count(DATA)}" SENSOR_TYPE="{$group_key}" />
+		</group>
+    </macro>
+	
+	<!-- 
+	@Macro FusionMacro:
+	Macro responsavel por agrupar os serviços de uma RSSF e 
+		realizar a Fusão dos Dados coletados indicando:
+		- quantidade de dados coletado
+		- a media das medidas coletadas
+		- a minima medida coletada
+		- a máxima medida coletada
+	@Serviço REST utilizado: /REST/getdata/[tipoSensor]/
+	-->	
+	<macro name="FusionMacro">
+        <input name="mydoc" type="document" />
+		<output name="result" type="document" />
+		<group outputvariable="result"  
+			by="$mydoc/Results/Row/SENSOR_TYPE">
+			<SENSOR TYPE="{$group_key}">
+				<count Total="{count(DATA)}"/>
+				<AVG dataAvg="{avg(DATA)}"/>
+				<MIN dataMin="{min(DATA)}"/>
+				<MAX dataMax="{max(DATA)}"/>
+			</SENSOR>
+		</group>
+    </macro>
+	
+	<!-- 
+	@Macro FusionMacroMax:
+	Macro responsavel por agrupar os serviços de uma RSSF e 
+		realizar a Fusão dos Dados coletados indicando a máxima medida coletada
+	@Serviço REST utilizado: /REST/getdata/[tipoSensor]/
+	-->	
+	<macro name="FusionMacroMax">
+        <input name="mydoc" type="document" />
+		<output name="result" type="document" />
+		<group outputvariable="result"  
+			by="$mydoc/Results/Row/SENSOR_TYPE">
+			<MAX dataMax="{max(DATA)}" SENSOR_TYPE="{$group_key}" />
+		</group>
+    </macro>
+	
+	<!-- 
+	@Macro FusionMacroMin:
+	Macro responsavel por agrupar os serviços de uma RSSF e 
+		realizar a Fusão dos Dados coletados indicando a mínima medida coletada
+	@Serviço REST utilizado: /REST/getdata/[tipoSensor]/
+	-->	
+	<macro name="FusionMacroMin">
+        <input name="mydoc" type="document" />
+		<output name="result" type="document" />
+		<group outputvariable="result"  
+			by="$mydoc/Results/Row/SENSOR_TYPE">
+			<MIN dataMin="{min(DATA)}" SENSOR_TYPE="{$group_key}" />
+		</group>
+    </macro>
+	
+	<!-- 
+	@Macro FusionMacroAvg:
+	Macro responsavel por agrupar os serviços de uma RSSF e 
+		realizar a Fusão dos Dados coletados indicando a média das medida coletada
+	@Serviço REST utilizado: /REST/getdata/[tipoSensor]/
+	-->	
+	<macro name="FusionMacroAvg">
+        <input name="mydoc" type="document" />
+		<output name="result" type="document" />
+		<group outputvariable="result"  
+			by="$mydoc/Results/Row/SENSOR_TYPE">
+			<AVG dataAvg="{avg(DATA)}" SENSOR_TYPE="{$group_key}" />
+		</group>
+    </macro>
+	
+	<!-- 
+	@Macro FilterbyDate:
+	Macro responsavel por filtrar os dados provenientes de uma RSSF
+		que se encontram entre duas datas enviadas como parâmetro (start, end)
+	@Serviço REST utilizado: /REST/getdata/[tipoSensor]/
+	-->	
+	<macro name="FilterbyDate">
+        <input name="mydoc" type="document" />
+		<input name="start" type="string"/>
+		<input name="end" type="string"/>
+		<output name="result" type="document" />
+		<filter inputvariable="mydoc"
+            filterexpr="/Results/Row[xs:date(DATE) >= xs:date($start) and xs:date($end) >= xs:date(DATE)]"
+            outputvariable="result" />
+    </macro>	
+	
+	<!-- 
+	@Macro FusionbyDate:
+	Macro responsavel por filtrar os dados provenientes de uma RSSF
+		que se encontram entre duas datas enviadas como parâmetro (start, end)
+		e realizar a fusão desses dados filtrados indicando:
+		- quantidade de dados coletado
+		- a media das medidas coletadas
+		- a minima medida coletada
+		- a máxima medida coletada
+	@Serviço REST utilizado: /REST/getdata/[tipoSensor]/
+	-->	
+	<macro name="FusionbyDate">
+        <input name="mydoc" type="document" />
+		<input name="start" type="string"/>
+		<input name="end" type="string"/>
+		<output name="result" type="document" />
+		<variable name="filter1" type="document"/>
+		<filter inputvariable="mydoc"
+            filterexpr="/Results/Row[xs:date(DATE) >= xs:date($start) and xs:date($end) >= xs:date(DATE)]"
+            outputvariable="filter1" />			
+		<group outputvariable="result"  
+			by="$filter1/Results/Row/SENSOR_TYPE">
+			<SENSOR TYPE="{$group_key}">
+				<count Total="{count(DATA)}"/>
+				<AVG dataAvg="{avg(DATA)}"/>
+				<MIN dataMin="{min(DATA)}"/>
+				<MAX dataMax="{max(DATA)}"/>
+			</SENSOR>
+		</group>
+    </macro>	
+</macros>
